@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A01 Kacky Hub</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="navbar">
+        <div class="navleft">
+            <a href="#">Home</a>
+        </div>
+        <div class="navmid">
+            <img height="90px" src="images/logomaybe.png" alt="A01 Kacky" draggable="false">
+        </div>
+        <div class="navright">
+            <a href="#">Leaderboard</a>
+        </div>
+    </div>
+    <div class="maps" id="maplist">
+        <div class="map" id="map1" onclick="opendropdown(1)">
+            <div class="image">
+                <img src="images/kacky01.png" draggable="false">
+                <img src="images/overlay.png" draggable="false">
+            </div>
+            <div class="text">
+                <h1>#01</h1>
+                <h2>by rcdtm</h2>
+            </div>
+            <div id="dropdown1" class="dropdown" style="display:none">
+                <h1>0 Finishers</h1>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
