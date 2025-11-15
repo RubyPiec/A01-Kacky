@@ -65,6 +65,7 @@ let maps = [
     },
 ]
 
+
 for(let i=2;i<=15;i++){
     let mapNum = String(i).padStart(2,'0')
     let newMap = document.getElementById('map1').cloneNode(true)
@@ -74,6 +75,7 @@ for(let i=2;i<=15;i++){
 
     newMap.id = `map${i}`
     newMap.querySelector('.dropdown').id = `dropdown${i}`
+    newMap.querySelector('.text').children[2].id = `select${i}`
 
     console.log(i)
     newMap.onclick = null;
@@ -81,17 +83,60 @@ for(let i=2;i<=15;i++){
     document.getElementById('maplist').appendChild(newMap)
 }
 
+let opinions;
+if(!localStorage.getItem('opinions')){
+    opinions = Array(15).fill('')
+} else{
+    opinions = JSON.parse(localStorage.getItem('opinions'))
+    for(i=1;i<=15;i++){
+        document.getElementById('select' + i).value = opinions[i-1]
+    }
+    updateopinions()
+}
+
+let darkmodeon = false
+if(localStorage.getItem('darkmodeon')){
+    if(localStorage.getItem('darkmodeon')=='true'){
+        swapmode()
+    }
+}
+
+function updateopinions(){
+    opinions = []
+    for(i=1;i<=15;i++){
+        let selectel = document.getElementById('select' + i)
+        opinions.push(selectel.value)
+        selectel.setAttribute('class', '')
+        if(selectel.value!=''){
+            selectel.classList.add(selectel.value)
+        }
+    }
+    localStorage.setItem('opinions', JSON.stringify(opinions))
+}
+
 async function loadRecords(mapnumber){
     let neededUID = maps[mapnumber]["uid"]
-    let res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(`http://dedimania.net/tmstats/?do=stat&Uid=${neededUID}&Show=RECORDS`))
+    //let res = await fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(`http://dedimania.net/tmstats/?do=stat&Uid=${neededUID}&Show=RECORDS`))
+    let res = await fetch('https://cors-proxy-here.rubypiec.workers.dev/?url=' + encodeURIComponent(`http://dedimania.net/tmstats/?do=stat&Uid=${neededUID}&Show=RECORDS`)) 
     let rawtext = await res.text()
-
     const parser = new DOMParser()
     let recordshtml = parser.parseFromString(rawtext, "text/html")
 
-    return Array.from(recordshtml.getElementsByClassName('tabl')[4].children[0].children).slice(2, -2);
+    if(Array.from(recordshtml.getElementsByClassName('tabl')[4].children[0].children).slice(3, -2).length==0){
+        return null;
+    }
+    return Array.from(recordshtml.getElementsByClassName('tabl')[4].children[0].children).slice(3, -2).map((a) => a.getElementsByTagName('td'));
     // Length = ^^^^.length
     // Length = recordshtml.getElementsByClassName('tabl')[4].children[0].children.length-5
+
+    // finsPerMap[(MAPNUM)][(PERSON)][(COLUMN)].querySelector('a').innerHTML
+    /* List of important columns: 
+        3 - login
+        4 - display name
+        7 - time
+
+        5 - rank (if you remove the queryselector)
+    */
 }
 
 let finsPerMap = [
@@ -117,12 +162,20 @@ async function getFinCache(mapnum){
     if(String(finsPerMap[mapnum])!=""){
         return finsPerMap[mapnum]
     } else{
+        if(finsPerMap[mapnum]==null){
+            return []
+        }
+        document.getElementById('map' + mapnum).style.cursor = 'progress'
         finsPerMap[mapnum] = await loadRecords(mapnum)
+        document.getElementById('map' + mapnum).style.cursor = 'pointer'
         return finsPerMap[mapnum]
     }
 }
 
 async function opendropdown(num){
+    if(document.getElementById('select' + num).matches(':hover')){
+        return;
+    }
     let information = await getFinCache(num)
     console.log(num)
     if(document.getElementById('map' + num).classList.contains('opened')){
@@ -131,6 +184,100 @@ async function opendropdown(num){
     } else{
         document.getElementById('map' + num).classList.add('opened')
         document.getElementById('dropdown' + num).style.display = 'block'
-        document.getElementById('dropdown' + num).querySelector('h1').innerHTML = information.length + ' finisher' + (information.length == 1 ? '' : 's')
+
+        let finisherlist = '';
+        if(information!=null){
+            document.getElementById('dropdown' + num).querySelector('h3').innerHTML = information.length + ' finisher' + (information.length == 1 ? '' : 's')
+        
+            for(let person in information.sort((a,b) => a[5].innerHTML - b[5].innerHTML)){
+                if(person%3==0&&person>0){
+                    finisherlist+='<br>'
+                }
+                finisherlist+=information[person][3].querySelector('a').innerHTML+'&emsp;&emsp;'
+            }
+        }
+        document.getElementById('dropdown' + num).querySelector('.finishers h1').innerHTML = finisherlist
+    }
+}
+
+let playerfininfo = {}
+async function openlb(){
+    document.getElementById('navbar').querySelector('.navright a').style.cursor = 'wait'
+    if(Object.keys(playerfininfo).length == 0){ //basically checks if this is the first time opening this menu
+        for(let mapn=1;mapn<=15;mapn++){
+            let lbinfo = await getFinCache(mapn)
+            if(lbinfo!=null){
+                for(let ppos in lbinfo){
+                    let person = lbinfo[ppos]
+                    let personlogin = person[3].querySelector('a').innerHTML
+                    if(!playerfininfo[personlogin]){
+                        playerfininfo[personlogin] = {
+                            "fins": 1,
+                            "averagerank": Number(person[5].innerHTML),
+                            "finnedmaps": [mapn]
+                        }
+                    } else{
+                        playerfininfo[personlogin] = {
+                            "fins": playerfininfo[personlogin]["fins"] + 1,
+                            "averagerank": (playerfininfo[personlogin]["averagerank"] * playerfininfo[personlogin]["fins"] + Number(person[5].innerHTML))/(playerfininfo[personlogin]["fins"]+1),
+                            "finnedmaps": [...playerfininfo[personlogin]["finnedmaps"], mapn]
+                        }
+                    }
+                }
+            }
+        }
+        let currentrank = 1
+        for([key, value] of Object.entries(playerfininfo).sort((a,b) => {
+            if (b[1]["fins"]<a[1]["fins"]) return -1
+            if (b[1]["fins"]>a[1]["fins"]) return 1
+
+            if (b[1]["averagerank"]<a[1]["averagerank"]) return 1
+            
+            return -1
+        })){
+            let newrow = document.getElementById('playerlb').insertRow(-1)
+            newrow.insertCell(0).appendChild(document.createTextNode(currentrank))
+
+            newrow.insertCell(1).appendChild(document.createTextNode(key))
+
+            let finnedMaps = document.createElement('div')
+            finnedMaps.innerHTML = value["fins"]
+            finnedMaps.classList.add('lbfincount')
+
+            let tooltip = document.createElement('span')
+            tooltip.innerHTML = '#' + value["finnedmaps"].join(', #')
+            tooltip.classList.add('tooltip')
+            finnedMaps.appendChild(tooltip)
+            newrow.insertCell(2).appendChild(finnedMaps)
+
+            newrow.insertCell(3).appendChild(document.createTextNode(Math.round(value["averagerank"]*10)/10))
+            currentrank++
+        }
+    }
+    document.getElementById('navbar').querySelector('.navright a').style.cursor = 'pointer';
+    document.getElementById('maplist').classList.add('hidden')
+    document.getElementById('playerlist').classList.remove('hidden')
+}
+
+function closelb(){
+    document.getElementById('maplist').classList.remove('hidden')
+    document.getElementById('playerlist').classList.add('hidden')
+}
+function swapmode(){
+    let swappableElements = [document.getElementsByTagName('html')[0], document.body, document.getElementById('playerlist'), ...Array.from(document.getElementsByClassName('dropdown'))]
+    if(!darkmodeon){
+        for(let el of swappableElements){
+            el.classList.add('dark')
+        }
+        darkmodeon = true
+        document.getElementById('dmtoggle').src = 'images/sunNOTASTOLENTEXTUREIPROMISE.png'
+        localStorage.setItem('darkmodeon', true)
+    } else{
+        for(let el of swappableElements){
+            el.classList.remove('dark')
+        }
+        darkmodeon = false
+        document.getElementById('dmtoggle').src = 'images/moon.png'
+        localStorage.setItem('darkmodeon', false)
     }
 }

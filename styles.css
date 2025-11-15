@@ -1,6 +1,13 @@
 html, body{
     font-family: Arial, Helvetica, sans-serif;
-    background-color: #ccc;
+    background: #ccc;
+    background: linear-gradient(90deg,#ddd 0%, #bbb 100%);
+}
+
+html.dark, body.dark{
+    transition: background-color 1s;
+    background: #444;
+    background: linear-gradient(90deg,#222 0%, #333 100%);
 }
 
 .navbar div{
@@ -34,7 +41,7 @@ a{
     color: white;
 }
 
-.navleft { grid-area: 1 / 1 / 2 / 2; margin-left: auto;}
+.navleft { grid-area: 1 / 1 / 2 / 2; margin-left: auto; }
 .navmid { grid-area: 1 / 2 / 2 / 3; margin-left: auto; margin-right: auto;} 
 .navright { grid-area: 1 / 3 / 2 / 4; margin-right: auto;}
 
@@ -51,6 +58,13 @@ a{
     top: 200px;
 }
 
+.players{
+    position: absolute;
+    top: 200px;
+    width: 60vw;
+    left: 20vw;
+}
+
 .map{
     cursor: pointer;
     position: relative;
@@ -60,11 +74,12 @@ a{
 }
 
 .map.opened{
-    padding-bottom: 19vh;
+    padding-bottom: 29vh;
     margin-bottom: 3vh;
 }
 
 .map .image img{
+    z-index: 1;
     width: 60vw;
     height: 18.75vh;
     border: 4px solid black;
@@ -73,7 +88,9 @@ a{
     -webkit-box-shadow: 10px 10px 15px 5px #000000AA; 
     box-shadow: 10px 10px 15px 5px #000000AA;
 }
+
 .text{
+    z-index: 2;
     right: 4px;
     color:white;
     position: absolute;
@@ -89,10 +106,17 @@ a{
     top: 16vh;
     padding-top: 3vh;
     width: 60vw;
-    z-index: -5;
+    z-index: 0;
     text-align: left;
-    max-height: 25vh;
-    overflow-y: scroll;
+    min-height: 35vh;
+    overflow-y: auto;
+    -webkit-box-shadow: 10px 10px 15px 5px #000000AA; 
+    box-shadow: 10px 10px 15px 5px #000000AA;
+}
+
+.dropdown.dark{
+    background-color: #333;
+    color: white;
 }
 
 h1{
@@ -102,5 +126,92 @@ h1{
 }
 
 h2{
+    margin-top: 0;
     font-size: 1.25vw;
+}
+
+h3{
+    font-size: 1vw;
+}
+
+.finishercount{
+    border-bottom: 5px solid black;
+}
+
+.hidden{
+    display: none;
+}
+
+table, tr, th{
+    font-size: 30px;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+.players.dark{
+    color: white;
+}
+
+td{
+    border-left: 1px solid black;
+}
+
+.lbfincount{
+    border-bottom: 1px dotted black;
+}
+
+.tooltip{
+    visibility: hidden;
+    max-width: 600px;
+    background-color: black;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    margin: -20px 10px;
+    position: absolute;
+    z-index: 1;
+}
+
+.lbfincount:hover .tooltip{
+    visibility: visible;
+}
+
+select{
+    background-color: white;
+    color: black;
+    border: 2px solid lightblue;
+    border-radius: 0.3vw;
+    height: 3vh;
+    font-size: 1vw;
+}
+
+.easy{
+    background-color: lime;
+}
+
+.mid{
+    background-color: yellow;
+    border: 2px solid orange;
+}
+
+.hard{
+    background-color: coral;
+    border: 2px solid red;
+}
+
+.imp{
+    background-color: black;
+    color: white;
+    border: 2px solid gray;
+}
+
+.darkmodetoggle{
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    max-width: 90px;
+    width: 10vw;
+    height: auto;
+    cursor: pointer;
 }

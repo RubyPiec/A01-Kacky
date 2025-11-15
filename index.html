@@ -7,15 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="navbar">
+    <div class="navbar" id="navbar">
         <div class="navleft">
-            <a href="#">Home</a>
+            <a href="#" onclick="closelb()">Home</a>
         </div>
         <div class="navmid">
             <img height="90px" src="images/logomaybe.png" alt="A01 Kacky" draggable="false">
         </div>
         <div class="navright">
-            <a href="#">Leaderboard</a>
+            <a href="#" onclick="openlb()">Leaderboard</a>
         </div>
     </div>
     <div class="maps" id="maplist">
@@ -27,12 +27,46 @@
             <div class="text">
                 <h1>#01</h1>
                 <h2>by rcdtm</h2>
+                <select onchange="updateopinions()" id="select1">
+                    <option></option>
+                    <option value="free">Free</option>
+                    <option value="easy">Easy</option>
+                    <option value="mid">Mid</option>
+                    <option value="hard">Hard</option>
+                    <option value="imp">Imp</option>
+                </select>
             </div>
             <div id="dropdown1" class="dropdown" style="display:none">
-                <h1>0 Finishers</h1>
+                <h3 class="finishercount">0 Finishers</h3>
+                <div class="finishers">
+                    <h1 style="font-size: 2.5vw" id="finisherlist1">tester</h1>
+                </div>
             </div>
         </div>
     </div>
+    <div class="players hidden" id="playerlist">
+        <table id="playerlb" style="margin-left: auto; margin-right: auto;">
+            <tr>
+                <th>Rank</th>
+                <th>Login</th>
+                <th>Fins</th>
+                <th>Average rank</th>
+            </tr>
+            <!--<tr>
+                <td>1</td>
+                <td>ca1ebyt</td>
+                <td>9</td>
+                <td>12</td>
+            </tr>
+            <tr>           i am keepinjg these here just in case
+                <td>2</td>
+                <td>jonathangd</td>
+                <td>holyshit</td>
+                <td>2550</td>
+            </tr>-->
+        </table>
+    </div>
+    <img onclick="swapmode()" id="dmtoggle" class="darkmodetoggle" height="90px" src="images/moon.png">
     <script src="script.js"></script>
 </body>
 </html>
