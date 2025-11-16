@@ -65,6 +65,25 @@ let maps = [
     },
 ]
 
+function updatescrsize(){
+    if(window.innerWidth<=650){
+        document.getElementById('lbbutton').style.display = 'none'
+        document.getElementById('homebutton').style.display = 'none'
+        document.getElementById('homeimg').style.display = 'block'
+        document.getElementById('lbimg').style.display = 'block'
+        for(n of document.getElementsByTagName('tr')){ //why the hell did I use n? idk what else to call this tbf. fair enough
+            n.children[3].style.display = 'none'
+        }
+    } else{
+        document.getElementById('lbbutton').style.display = 'block'
+        document.getElementById('homebutton').style.display = 'block'
+        document.getElementById('homeimg').style.display = 'none'
+        document.getElementById('lbimg').style.display = 'none'
+        for(n of document.getElementsByTagName('tr')){
+            n.children[3].style.display = 'table-cell'
+        }
+    }
+}
 
 for(let i=2;i<=15;i++){
     let mapNum = String(i).padStart(2,'0')
@@ -77,11 +96,18 @@ for(let i=2;i<=15;i++){
     newMap.querySelector('.dropdown').id = `dropdown${i}`
     newMap.querySelector('.text').children[2].id = `select${i}`
 
-    console.log(i)
     newMap.onclick = null;
     newMap.addEventListener('click', function (){opendropdown(i)})
     document.getElementById('maplist').appendChild(newMap)
 }
+
+let joinButton = document.createElement('a')
+joinButton.classList.add('join')
+joinButton.href = 'tmtp://#join=a01kackytm'
+joinButton.innerHTML='Join the server!'
+
+document.getElementById('maplist').appendChild(document.createElement('br'))
+document.getElementById('maplist').appendChild(joinButton)
 
 let opinions;
 if(!localStorage.getItem('opinions')){
@@ -177,7 +203,6 @@ async function opendropdown(num){
         return;
     }
     let information = await getFinCache(num)
-    console.log(num)
     if(document.getElementById('map' + num).classList.contains('opened')){
         document.getElementById('map' + num).classList.remove('opened')
         document.getElementById('dropdown' + num).style.display = 'none'
@@ -188,15 +213,37 @@ async function opendropdown(num){
         let finisherlist = '';
         if(information!=null){
             document.getElementById('dropdown' + num).querySelector('h3').innerHTML = information.length + ' finisher' + (information.length == 1 ? '' : 's')
-        
-            for(let person in information.sort((a,b) => a[5].innerHTML - b[5].innerHTML)){
-                if(person%3==0&&person>0){
-                    finisherlist+='<br>'
+
+            if(document.getElementById('dropdown' + num).querySelector('.finishers').children.length==0){
+                for(let person in information.sort((a,b) => a[5].innerHTML - b[5].innerHTML)){
+                    let tooltip = document.createElement('span')
+                    tooltip.innerHTML = information[person][7].querySelector('a').innerHTML
+                    tooltip.classList.add('tooltipdropdown')
+
+                    if(information.length>10){
+                        if(person>information.length-6){
+                            tooltip.classList.add('flip')
+                        }
+                    }
+
+                        /*if(person%3==0&&person>0){
+                            finisherlist+='<br>'
+                        }*/
+                    let player = document.createElement('h1')
+                    player.style.display = 'inline'
+                    player.style.fontSize = '2.5vw'
+                    player.innerHTML = information[person][3].querySelector('a').innerHTML+'&emsp;&emsp;'
+                    player.classList.add('pnamedropdown')
+                    
+                    player.appendChild(tooltip)
+
+                    document.getElementById('dropdown' + num).querySelector('.finishers').appendChild(player)
+                    
+                    finisherlist+=information[person][3].querySelector('a').innerHTML+'&emsp;&emsp;'
                 }
-                finisherlist+=information[person][3].querySelector('a').innerHTML+'&emsp;&emsp;'
             }
         }
-        document.getElementById('dropdown' + num).querySelector('.finishers h1').innerHTML = finisherlist
+        //document.getElementById('dropdown' + num).querySelector('.finishers h1').innerHTML = finisherlist
     }
 }
 
@@ -257,14 +304,16 @@ async function openlb(){
     document.getElementById('navbar').querySelector('.navright a').style.cursor = 'pointer';
     document.getElementById('maplist').classList.add('hidden')
     document.getElementById('playerlist').classList.remove('hidden')
+    updatescrsize()
 }
 
 function closelb(){
     document.getElementById('maplist').classList.remove('hidden')
     document.getElementById('playerlist').classList.add('hidden')
 }
+
 function swapmode(){
-    let swappableElements = [document.getElementsByTagName('html')[0], document.body, document.getElementById('playerlist'), ...Array.from(document.getElementsByClassName('dropdown'))]
+    let swappableElements = [document.getElementsByTagName('html')[0], document.body, document.getElementById('playerlist'), ...Array.from(document.getElementsByClassName('dropdown')), document.getElementsByClassName('join')[0]]
     if(!darkmodeon){
         for(let el of swappableElements){
             el.classList.add('dark')
@@ -281,3 +330,9 @@ function swapmode(){
         localStorage.setItem('darkmodeon', false)
     }
 }
+
+onresize = () => {
+    updatescrsize()
+}
+
+updatescrsize()

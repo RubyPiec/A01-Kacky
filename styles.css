@@ -2,6 +2,7 @@ html, body{
     font-family: Arial, Helvetica, sans-serif;
     background: #ccc;
     background: linear-gradient(90deg,#ddd 0%, #bbb 100%);
+    overflow-x: hidden;
 }
 
 html.dark, body.dark{
@@ -27,7 +28,7 @@ html.dark, body.dark{
     grid-column-gap: 0px;
     grid-row-gap: 0px;
     font-size: 45px;
-    background-color: black;
+    background: radial-gradient(#666, #000);
     color: white;
     border-bottom: 6px solid #2D59D5;
     padding-top: 5px;
@@ -61,8 +62,10 @@ a{
 .players{
     position: absolute;
     top: 200px;
-    width: 60vw;
-    left: 20vw;
+    /*width: 60vw;
+    left: 20vw;*/
+    left: 50%;
+    transform: translateX(-50%);
 }
 
 .map{
@@ -148,6 +151,10 @@ table, tr, th{
     border-collapse: collapse;
 }
 
+.players.dark table, .players.dark tr, .players.dark th{
+    border: 1px solid white;
+}
+
 .players.dark{
     color: white;
 }
@@ -156,8 +163,21 @@ td{
     border-left: 1px solid black;
 }
 
+.players.dark td{
+    border-left: 1px solid white;
+}
+
 .lbfincount{
     border-bottom: 1px dotted black;
+}
+
+.players.dark .lbfincount{
+    border-bottom: 1px dotted white;
+}
+
+.pnamedropdown{
+    position: relative;
+    display: inline;
 }
 
 .tooltip{
@@ -170,20 +190,44 @@ td{
     padding: 5px 5px;
     margin: -20px 10px;
     position: absolute;
-    z-index: 1;
+    z-index: 100;
+}
+
+.tooltipdropdown{
+    font-size: 2vw;
+    pointer-events: none;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    display: none;
+    max-width: 600px;
+    background-color: rgba(0, 0, 0, 0.9);
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 5px;
+    z-index: 99999;
+}
+
+.tooltipdropdown.flip{
+    top: -100%;
 }
 
 .lbfincount:hover .tooltip{
     visibility: visible;
 }
+.pnamedropdown:hover .tooltipdropdown{
+    display: inline;
+}
 
 select{
+    position: relative;
     background-color: white;
     color: black;
     border: 2px solid lightblue;
     border-radius: 0.3vw;
     height: 3vh;
-    font-size: 1vw;
+    font-size: 2vh;
 }
 
 .easy{
@@ -214,4 +258,26 @@ select{
     width: 10vw;
     height: auto;
     cursor: pointer;
+}
+
+.join{
+    border: 1px solid blue;
+    background-color: cyan;
+    border-radius: 5px;
+    padding: 5px;
+    bottom: 1vh;
+    color: black;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.join.dark{
+    border: 1px solid cyan;
+    background-color: blue;
+    color: white;
+}
+
+img{
+    user-select: none;
 }

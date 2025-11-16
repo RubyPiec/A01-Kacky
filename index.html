@@ -9,13 +9,19 @@
 <body>
     <div class="navbar" id="navbar">
         <div class="navleft">
-            <a href="#" onclick="closelb()">Home</a>
+            <a href="#" onclick="closelb()">
+                <span id="homebutton">Home</span>
+                <img height="90px" id="homeimg" src="images/home.png" alt="Home" draggable="false" style="display:none">
+            </a>
         </div>
         <div class="navmid">
             <img height="90px" src="images/logomaybe.png" alt="A01 Kacky" draggable="false">
         </div>
         <div class="navright">
-            <a href="#" onclick="openlb()">Leaderboard</a>
+            <a href="#" onclick="openlb()">
+                <span id="lbbutton">Leaderboard</span>
+                <img height="90px" id="lbimg" src="images/leaderboard.png" alt="Leaderboard" draggable="false" style="display:none">
+            </a>
         </div>
     </div>
     <div class="maps" id="maplist">
@@ -39,13 +45,13 @@
             <div id="dropdown1" class="dropdown" style="display:none">
                 <h3 class="finishercount">0 Finishers</h3>
                 <div class="finishers">
-                    <h1 style="font-size: 2.5vw" id="finisherlist1">tester</h1>
+                    <!--<h1 style="font-size: 2.5vw" id="finisherlist1">tester</h1>-->
                 </div>
             </div>
         </div>
     </div>
     <div class="players hidden" id="playerlist">
-        <table id="playerlb" style="margin-left: auto; margin-right: auto;">
+        <table id="playerlb" style="margin: 0 auto;">
             <tr>
                 <th>Rank</th>
                 <th>Login</th>
